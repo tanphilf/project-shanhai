@@ -1,0 +1,80 @@
+html,
+body,
+div,
+p,
+img,
+h1,
+h2,
+h3,
+h4,
+h5,
+ul,
+li {
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+	color: inherit;
+	font-size: inherit;
+	user-select: none;
+}
+
+body,
+html {
+	width: 7.5rem;
+	max-width: 1000px;
+	overflow-x: hidden;
+	background-color: #f8f8f8;
+}
+
+
+@font-face {
+	font-family: 'fangSong';
+	src: url('../assets/han.ttf');
+}
+
+#app {
+	font-family: "fangSong", "Avenir", Helvetica, Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	color: #333;
+	font-size: 16px;
+	width: 7.5rem;
+	background-color: #f2f2f2;
+}
+img {
+	display: block;
+	outline: none;
+	border: none;
+}
+a,
+u {
+	text-decoration: none;
+}
+
+b,
+em,
+i {
+	font-weight: normal;
+	font-style: normal;
+}
+
+ul li {
+	list-style-type: none;
+}
+
+input {
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+	color: inherit;
+	font-size: inherit;
+	border-style: none;
+	outline: none;
+}
+
+
+.align-row-center {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
