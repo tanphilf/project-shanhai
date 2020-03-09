@@ -66,10 +66,10 @@
         beforeCreate() {
             try {
                 if (window.DeviceOrientationEvent) {
-                    console.log('支持罗盘感应')
-                    var a = document.getElementById('alpha'),
-                        b = document.getElementById('beta'),
-                        g = document.getElementById('gamma');
+                    // console.log('支持罗盘感应')
+                    // var a = document.getElementById('alpha'),
+                    //     b = document.getElementById('beta'),
+                    //     g = document.getElementById('gamma');
 
                     window.addEventListener('deviceorientation', (event) => {
                         // alert('罗盘感应')
@@ -320,9 +320,9 @@
             position: absolute;
             z-index: 1;
             left: -100px;
-            top: -50px;
+            top: 180px;
             width: 15rem;
-            height: 100%;
+            height: 5rem;
         }
     }
 </style>

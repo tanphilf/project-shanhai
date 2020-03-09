@@ -26,13 +26,6 @@ function requestVideoUrls(part_format_id, vid, fileName, callback) {
         jsonpCallback: 'jsonpCb'
     }).done(() => {
         step++
-        // console.log('requestVideoUrls down:', step)
-    })
-
-    return ajax.get({
-        url,
-    }).then(res => {
-        console.log('ajax axios请求：',res)
     })
 }
 
@@ -82,34 +75,6 @@ function getVideoInfo(vid, callback = () => { }) {
     }).fail((e) => {
         console.log('ajax fail', e)
     })
-
-    // return ajax.get(urlString).then(res => {
-    //     try {
-    //         console.log('视频信息返回：', res)
-    //         let dataJson = res.data.replace(/QZOutputJson=/, '') + "qwe";
-    //         let dataJson1 = dataJson.replace(/;qwe/, '');
-    //         let data = JSON.parse(dataJson1)
-    //         let fn_pre = data.vl.vi[0].lnk
-    //         host = data['vl']['vi'][0]['ul']['ui'][0]['url']
-    //         let streams = data['fl']['fi']
-    //         let seg_cnt = data['vl']['vi'][0]['cl']['fc']
-    //         if (parseInt(seg_cnt) == 0) {
-    //             seg_cnt = 1
-    //         }
-    //         let part_format_id = streams[streams.length - 1]['id']
-    //         for (let i = 1; i < (seg_cnt + 1); i++) {
-    //             let filename = `${fn_pre}.p${part_format_id % 10000}.${i}.mp4`
-    //             requestVideoUrls(part_format_id, vid, filename, 'index' + i).then(url => {
-    //                 console.log({ url })
-    //                 resolve(url)
-    //             }).catch(err => {
-    //                 resolve(err)
-    //             })
-    //         }
-    //     } catch (e) {
-    //         reject(e)
-    //     }
-    // })
 }
 
 function getTencentVideoID(src) {
@@ -119,7 +84,7 @@ function getTencentVideoID(src) {
         start = src.indexOf('/cover/') || src.indexOf('/page/')
         type = 'vip'
     } else if (src.indexOf('/page/') >= 0) {
-        start = src.indexOf('/page/') || src.indexOf('/page/')
+        start = src.indexOf('/page/')
         type = 'personal'
     }
     let end = src.indexOf('.html')

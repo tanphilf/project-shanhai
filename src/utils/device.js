@@ -24,7 +24,7 @@
     }, false);
 
     // 多指
-    document.addEventListener('gesturestart', function(event) {
+    document.addEventListener('gesturestart', function (event) {
         event.preventDefault();
     });
 
@@ -36,5 +36,11 @@
         }
         lastTouchEnd = now;
     }, false);
+
+    // 修复ios手机键盘弹起不收回的bug
+    (/iphone|ipod|ipad/i.test(navigator.appVersion)) && document.addEventListener('blur', (e) => {
+        // 这里加了个类型判断，因为a等元素也会触发blur事件
+        ['input', 'textarea'].includes(e.target.localName) && document.body.scrollIntoView(false)
+    }, true);
 
 })(document, window);

@@ -10,7 +10,7 @@
                     <span class="loading-value">{{progress}}%</span>
                 </div>
             </div>
-            <img @click="onEnter" src="" class="enter-btn" :style="{opacity: progress<100?0:1}" alt="">
+            <img @click="onEnter" src="../assets/start.png" class="enter-btn" :style="{opacity: progress<100?0:1}" alt="">
         </div>
     </div>
 </template>
@@ -93,10 +93,10 @@
             }
 
             .enter-btn {
-                width: 3.8rem;
-                height: 1.42rem;
+                width: 2.4rem;
+                height: 1rem;
                 top: 3rem;
-                background-color: rgba($color: white, $alpha: 0.56);
+                /* background-color: rgba($color: white, $alpha: 0.56); */
                 /* position: absolute; */
                 transition: opacity ease-in-out 1.2s 1.6s;
                 animation: enterBtn 2s infinite;

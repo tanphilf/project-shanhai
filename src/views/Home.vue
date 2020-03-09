@@ -3,7 +3,7 @@
     <loading v-if="step<=1" @loadingEnd="onLoadingDown" @enter="onEnterApp"></loading>
 
     <step-cover :show="step>4&&step<=9">
-      <main-scene :startCar="(step>=5&&step<9?true:false)" @carEnter="onCarEnter"></main-scene>
+      <main-scene :startCar="(step>=5&&step<=9?true:false)" @carEnter="onCarEnter"></main-scene>
     </step-cover>
 
     <video-player @click="onClickPlayer" :src="video" :show="!!video" @ended="onVideoPlayEnd"></video-player>
@@ -29,7 +29,7 @@
       <dialog-box :human="dg_humans" :list="dg_ls" bottom="20%" @ended="onDialogEnded"></dialog-box>
     </step-cover>
 
-    <car-inside :show="step>=9"></car-inside>
+    <car-inside :show="step>=9" @storyEnded="onStoryEnded"></car-inside>
 
   </div>
 </template>
@@ -62,16 +62,22 @@
         videoPlayEnd: false,
         dg_humans: [],
         dg_ls: [require('../assets/main/d1.png')],
+        audio: null
       }
     },
+
     created() {
-      // console.log('home create:', this.$jq)
-      // videoUtil.parseVideoUrl('https://v.qq.com/x/page/j3071wpfq16.html', (res) => {
-      //   console.log('视频链接：', res)
-      // })
+      // this.test()
+    },
+
+    beforeDestroy() {
+      this.pauseMusic()
     },
 
     methods: {
+      test() {
+        this.step = 7
+      },
       onLoadingDown() {
         console.log('加载完毕')
       },
@@ -81,7 +87,7 @@
         this.nextStep()
         this.videoPlayEnd = false
         // this.video = require('../assets/video/v1.mp4')
-        videoUtil.parseVideoUrl('https://v.qq.com/x/page/j3071wpfq16.html', res => {
+        videoUtil.parseVideoUrl('https://v.qq.com/x/page/y3077b8gz8z.html', res => {
           this.video = res[0] || res
         })
       },
@@ -111,6 +117,50 @@
       onDialogEnded() {
         this.nextStep()
         console.log('对话完毕', this.step)
+
+        // ios背景音乐需要有交互才会播放
+        let isIos = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+        if (this.step == 9 && isIos) {
+          this.audio = new Audio()
+          this.audio.loop = true
+          this.audio.volume = 0
+          this.audio.src = require('../assets/audio/bg_music.wav')
+          this.audio.load()
+          setTimeout(() => {
+            this.playMusic()
+          }, 6800);
+        }
+      },
+
+      playMusic() {
+        this.audio.play()
+        let v = 0
+        let timer = setInterval(() => {
+          v += 0.1
+          if (v > 0.9) {
+            clearInterval(timer)
+          } else {
+            this.audio.volume = parseFloat(v).toFixed(1)
+          }
+
+        }, 200);
+      },
+
+      pauseMusic() {
+        let v = 1
+        let timer = setInterval(() => {
+          v -= 0.1
+          if (v < 0.1) {
+            this.audio.pause()
+            clearInterval(timer)
+          } else {
+            this.audio.volume = parseFloat(v).toFixed(1)
+          }
+        }, 200);
+      },
+
+      onStoryEnded() {
+        this.pauseMusic()
       },
 
       handClick() {

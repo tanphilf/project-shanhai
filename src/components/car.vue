@@ -14,9 +14,11 @@
             </div>
         </div>
 
-        <div :class="['car-door', showBox?'door-in':'']">
-            <img src="../assets/main/door1.png" class="door door-1" alt="">
-            <img src="../assets/main/door2.png" class="door door-2" alt="">
+        <div :class="['car-door', showDoor?'door-show':'door-hide']">
+            <img src="../assets/main/door2.png" :class="doorOpen?'door-2-in':'door-2-out'"
+                @transitionend="onDoor2TransEnd" class="door door-2" alt="">
+            <img src="../assets/main/door1.png" :class="doorOpen?'door-1-in':'door-1-out'"
+                @transitionend="onDoor1TransEnd" class="door door-1" alt="">
         </div>
 
         <step-cover :show="showTip" opacity="0">
@@ -92,7 +94,7 @@
                 </div>
             </div>
         </step-cover>
-
+        <audio id="bgMusic" ref="bgMusic" :src="bgMusicUrl" loop autoplay preload="auto"></audio>
     </div>
 
 </template>
@@ -133,7 +135,7 @@
         watch: {
             show(nv) {
                 if (nv) {
-                    this.openDoor()
+                    this.init()
                 }
             }
         },
@@ -154,11 +156,14 @@
                 submitEnded: false,
                 showCode: false,
                 introEnded: false,
-
+                doorOpen: false,
+                showDoor: false,
                 totast: '',
                 dialogues: [],
                 phoneNumber: '',
-                code: ''
+                code: '',
+                bgMusic: null,
+                bgMusicUrl: require('../assets/audio/bg_music.wav')
             }
         },
 
@@ -166,20 +171,55 @@
             this.showBox = !!this.show
             this.apdaterCover()
             window.addEventListener('resize', this.apdaterCover);
-            this.dealInputBlur();
         },
 
         methods: {
-            dealInputBlur() {
-                (/iphone|ipod|ipad/i.test(navigator.appVersion)) && document.addEventListener('blur', (e) => {
-                    // 这里加了个类型判断，因为a等元素也会触发blur事件
-                    ['input', 'textarea'].includes(e.target.localName) && document.body.scrollIntoView(false)
-                }, true);
+            init() {
+                this.openDoor()
+                this.initMusic()
+            },
+
+            initMusic() {
+                // 背景音乐浏览器兼容(移动端微信和safari无法自动播放)
+                if (!!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
+                    return
+                }
+                this.bgMusic = this.$refs.bgMusic
+            },
+
+            playBgMusic() {
+                console.log('播放音乐')
+                this.bgMusic && this.bgMusic.play()
+            },
+
+            pauseBgMusic() {
+                console.log('暂停播放音乐')
+                this.bgMusic && this.bgMusic.pause()
+            },
+
+            stopBgMusic() {
+                console.log('停止播放音乐')
+                this.bgMusic && this.bgMusic.stop()
             },
 
             onIntroTransEnd() {
-                // console.log('落幕结束')
                 this.introEnded = true
+            },
+
+            onDoor1TransEnd() {
+                // if (this.doorOpen) {
+                //     this.doorOpen = false
+                // }
+            },
+
+            onDoor2TransEnd() {
+                if (this.doorOpen) {
+                    this.doorOpen = false
+                    setTimeout(() => {
+                        this.showDoor = false
+                        this.playBgMusic()
+                    }, 4600);
+                }
             },
 
             toSummaryInfo() {
@@ -190,8 +230,11 @@
             },
 
             openDoor() {
-                console.log('KAIMEN')
                 this.showBox = true
+                this.showDoor = true
+                setTimeout(() => {
+                    this.doorOpen = true
+                }, 300);
             },
 
             onStepChange(s) {
@@ -203,6 +246,7 @@
                 this.openBook = false
                 this.startStory = false
                 this.storyEnded = true
+                this.$emit('storyEnded')
             },
 
             nextStep() {
@@ -271,8 +315,8 @@
             },
 
             getCode() {
-                if (!this.phoneNumber || !this.code) {
-                    return this.totast = !this.phoneNumber ? '请输入电话号码' : !this.code ? '请输入验证码' : ''
+                if (!this.phoneNumber) {
+                    return this.totast = '请输入电话号码'
                 }
 
                 if (!isPhoneNumer(this.phoneNumber)) {
@@ -311,7 +355,6 @@
 
             onInputPhoneCode(e) {
                 this.code = e.currentTarget.value
-                console.log('输入验证码：', this.code)
             },
 
             apdaterCover() {
@@ -326,7 +369,7 @@
                 } else if (clientHeight >= 667) {
                     this.adapterY = clientHeight * 0.4 + 'px'
 
-                } else if (clientHeight >= 568) {
+                } else {
                     this.adapterY = clientHeight * 0.4 - 16 + 'px'
                 }
             }
@@ -380,7 +423,9 @@
             position: absolute;
             width: 100%;
             height: 200px;
-            /* background-color: rgba(0, 0, 0, 0.4); */
+            top: 50%;
+            left: 0;
+            /* background-color: yellow; */
         }
 
         .invite-code-wrapper {
@@ -610,22 +655,21 @@
 
         .car-bg-in {
             opacity: 1;
-            transition: opacity 0.8s ease-out 2s;
+            transition: opacity 0.8s ease-out 4s;
         }
 
-        .door-in {
-            left: 100% !important;
-            transition: left 4s ease-in-out;
+        .door-show {
+            z-index: 501 !important;
         }
 
-        .door-close {
-            left: -200% !important;
-            transition: left 1.8s ease-in-out;
+        .door-hide {
+            z-index: -100 !important;
         }
 
         .car-door {
             position: absolute;
-            left: -200%;
+            /* left: 100%; */
+            left: 0;
             top: 0;
             z-index: 501;
             width: 100%;
@@ -634,13 +678,56 @@
             flex-direction: row;
 
             .door {
+                position: absolute;
+                top: 0;
+                left: 100%;
                 width: 100%;
                 height: 100%;
             }
 
-            .door-1 {}
+            @keyframes door1In {
+                0% {
+                    left: 100%;
+                }
 
-            .door-2 {}
+                50% {
+                    left: 0;
+                }
+
+                100% {
+                    left: -100%;
+                }
+            }
+
+            .door-1-in {
+                left: 50% !important;
+                transition: left 1.32s ease-in-out;
+            }
+
+            .door-2-in {
+                left: 0 !important;
+                transition: left 1.2s ease-in-out 1.32s;
+            }
+
+            .door-1-out {
+                left: 100% !important;
+                transition: left 1.8s ease-in-out 2s;
+            }
+
+            .door-2-out {
+                left: 100% !important;
+                transition: left 1.4s ease-in-out 2.8s;
+            }
+
+            .door-1 {
+                z-index: 2;
+                left: 100%;
+                /* animation: door1In 3s cubic-bezier(0.75, 0.2, 0.25, 0.85); */
+            }
+
+            .door-2 {
+                z-index: 1;
+            }
         }
     }
 </style>

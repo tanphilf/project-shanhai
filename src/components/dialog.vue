@@ -1,7 +1,8 @@
 <template>
     <div class="dialog-wrapper" @click="handleNext">
         <div v-if="!dialogues.length" class="single-dialogue">
-            <img v-if="human" :src="human" :style="{left: humanLeft, bottom: humanBottom, width: humanWidth, height: humanHeight }"
+            <img v-if="human" :src="human"
+                :style="{left: humanLeft, bottom: humanBottom, width: humanWidth, height: humanHeight }"
                 class="dialog-human" alt="">
             <img :src="list[d_step]" :style="{width, height,left, top, right, bottom }" class="dialog-item"
                 :class="center?'center': [['align-x-left', 'align-x-top', 'align-x-right', 'align-x-bottom'][positionX], ['align-y-left', 'align-y-top', 'align-y-right', 'align-y-bottom'][positionY]]"
@@ -164,7 +165,8 @@
                 singleWords: '',
                 dgBgHeight: '1.4rem',
                 autoChanged: false,
-                stepEnded: false
+                stepEnded: false,
+                changeTimer: null
             }
         },
 
@@ -176,15 +178,18 @@
 
         methods: {
             startAutoChange() {
-                console.log('自动切换')
-                let changeTimer = setInterval(() => {
+                // console.log('自动切换')
+                this.changeTimer = setInterval(() => {
                     this.autoChanged = true
                     this.onNext();
                     if (this.stepEnded) {
-                        console.log('暂停自动切换')
-                        clearInterval(changeTimer)
+                        clearInterval(this.changeTimer)
                     }
                 }, 3200);
+            },
+
+            pauseAutoChange() {
+                clearInterval(this.changeTimer)
             },
 
             fitDialogueBgSize() {
@@ -193,11 +198,16 @@
                 let line = (parseInt(wlen / 16) + (wlen % 16 > 0 ? 1 : 0))
                 line = line > 1 ? line : 1
                 this.dgBgHeight = line * 0.5 + 1.4 + 'rem'
-                // console.log('对话长度：', wlen, line, this.dgBgHeight)
             },
 
             handleNext() {
+                // this.pauseAutoChange()
                 this.onNext(true)
+                // setTimeout(() => {
+                //     if (!this.stepEnded) {
+                //         this.startAutoChange()
+                //     }
+                // }, 1200);
             },
 
             onNext(touched = false) {

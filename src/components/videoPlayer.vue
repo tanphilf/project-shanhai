@@ -65,17 +65,6 @@
             this.showPlayer = this.show
         },
 
-        mounted() {
-            try {
-                if (this.autoPlay&&this.$refs.video) {
-                    // console.log('自动播放视频：', this.$refs.video)
-                    this.$refs.video.play()
-                }
-            } catch (e) {
-                console.log(e)
-            }
-        },
-
         methods: {
             onVideoPlayEnd() {
                 this.$emit('ended')

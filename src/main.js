@@ -4,8 +4,14 @@ import router from "./router";
 import store from "./store";
 import jq from "jquery"
 
-if(window) {
+if (window) {
   window.$ = jq
+  router.beforeEach((to, from, next) => {
+    if (to.meta.title) {
+      document.title = to.meta.title
+    }
+    next()
+  })
 }
 Vue.config.productionTip = false;
 
