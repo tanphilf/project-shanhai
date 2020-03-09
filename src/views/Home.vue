@@ -6,17 +6,18 @@
       <main-scene :startCar="(step>=5&&step<=9?true:false)" @carEnter="onCarEnter"></main-scene>
     </step-cover>
 
-    <video-player @click="onClickPlayer" :src="video" :show="!!video" @ended="onVideoPlayEnd"></video-player>
+    <video-player v-if="step<=4" @click="onClickPlayer" :src="video" :show="!!video" @ended="onVideoPlayEnd">
+    </video-player>
 
-    <step-cover :show="step==3">
+    <step-cover v-if="step>=2&&step<4" :show="step==3">
       <div class="dialog" @click="handDialogTap">我：啊呀！</div>
     </step-cover>
 
-    <step-cover :show="step==4">
+    <step-cover v-if="step>=3&&step<5" :show="step==4">
       <dialog-box :list="dg_ls" bottom="20%" @ended="onDialogEnded"></dialog-box>
     </step-cover>
 
-    <step-cover :show="step==6" @click="nextStep" opacity="0.5">
+    <step-cover v-if="step>=5&&step<7" :show="step==6" @click="nextStep" opacity="0.5">
       <div class="shake-tip-box">
         <div class="shake-box">
           <img src="../assets/main/hander.png" class="shake-hander" alt="">
@@ -25,11 +26,11 @@
       </div>
     </step-cover>
 
-    <step-cover :show="step==8" opacity="0">
+    <step-cover v-if="step>=7&&step<9" :show="step==8" opacity="0">
       <dialog-box :human="dg_humans" :list="dg_ls" bottom="20%" @ended="onDialogEnded"></dialog-box>
     </step-cover>
 
-    <car-inside :show="step>=9" @storyEnded="onStoryEnded"></car-inside>
+    <car-inside v-if="step>=8" :show="step>=9" @storyEnded="onStoryEnded"></car-inside>
 
   </div>
 </template>
@@ -87,6 +88,7 @@
         this.nextStep()
         this.videoPlayEnd = false
         // this.video = require('../assets/video/v1.mp4')
+        // this.video = 'http://ugcbsy.qq.com/uwMROfz2r5zIIaQXGdGnC2dfDmb_xYKxrIGz_bGUg2Lja6ru/y3077b8gz8z.p709.1.mp4?vkey=E3A0BC2B76AD670795A868E830420EB3F4F41E7A9EAA0E5A81BAFD85FAC127F86D6B45491BBD4DD0C403C3E025A750B5CDD478411C17707E892F18F87F86247C86AB9191EB49A99AECB2731012DE4E2D0414B61825E691E1770311B54957C6C968C5F6324AAD5A2096663E01228CE632'
         videoUtil.parseVideoUrl('https://v.qq.com/x/page/y3077b8gz8z.html', res => {
           this.video = res[0] || res
         })
@@ -128,7 +130,7 @@
           this.audio.load()
           setTimeout(() => {
             this.playMusic()
-          }, 6800);
+          }, 5800);
         }
       },
 

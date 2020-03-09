@@ -163,7 +163,7 @@
                 phoneNumber: '',
                 code: '',
                 bgMusic: null,
-                bgMusicUrl: require('../assets/audio/bg_music.wav')
+                bgMusicUrl: ''
             }
         },
 
@@ -189,6 +189,7 @@
 
             playBgMusic() {
                 console.log('播放音乐')
+                this.bgMusicUrl = require('../assets/audio/bg_music.wav')
                 this.bgMusic && this.bgMusic.play()
             },
 
@@ -711,12 +712,12 @@
 
             .door-1-out {
                 left: 100% !important;
-                transition: left 1.8s ease-in-out 2s;
+                transition: left 1.4s ease-in-out 1s;
             }
 
             .door-2-out {
                 left: 100% !important;
-                transition: left 1.4s ease-in-out 2.8s;
+                transition: left 1.4s ease-in-out 2s;
             }
 
             .door-1 {
