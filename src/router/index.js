@@ -12,11 +12,6 @@ const routes = [
     meta: {
       title: '山海镜花'
     }
-  },
-  {
-    path: "/about",
-    name: "About",
-    // component: () => import("../views/About.vue")
   }
 ];
 

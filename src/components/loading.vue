@@ -1,6 +1,6 @@
 <template>
     <div class="loading-home-page">
-        <img src="../assets/loading_bg.png" class="loading-page-bg">
+        <img src="../assets/loading_bg.jpg" class="loading-page-bg">
         <div class="loading-cover">
             <img src="../assets/loading_logo.png" class="home-logo" alt="">
             <div class="loading-progress" :style="{opacity: progress>=100?0:1}">

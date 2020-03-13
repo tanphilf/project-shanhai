@@ -1,23 +1,28 @@
 <template>
     <div class="car-wrapper" :style="{zIndex: showBox?1000:-200, opacity: showBox?1: 0}">
         <div :class="['car-inside', showBox?'car-bg-in':'']">
-            <img src="../assets/main/car_inside.png" :class="['car-bg']" alt="">
-            <img src="../assets/main/car_inside_empty.png" style="opacity: 0;"
+            <img src="../assets/main/car_inside.jpg" :class="['car-bg']" alt="">
+            <img src="../assets/main/car_inside_empty.jpg" style="opacity: 0;"
                 :class="['car-bg', startStory||storyEnded||submitEnded||showCode?'car-bg-show':'']" alt="">
             <!-- 不同屏幕下浮层位置调整 -->
-            <div class="cover-adapter" :style="{left: adapterX, top: adapterY}">
+            <div v-if="showObjects" class="cover-adapter" :style="{left: adapterX, top: adapterY}">
                 <img @click="toggleBook" src="../assets/main/book.png" class="car-book" alt="">
                 <img @click="tapJars" src="../assets/main/jars.png" class="car-jars" alt="">
                 <img @click="tapScroll" src="../assets/main/scroll.png" class="car-scroll" alt="">
                 <img @click="tapWorm" src="../assets/main/worm.png" class="car-worm" alt="">
+            </div>
+
+            <div v-if="!showObjects" class="cover-adapter" :style="{left: adapterX, top: adapterY}">
                 <img @click="toggleTip" src="../assets/main/horn.png" class="car-horn" alt="">
+                <img @click="openLeadBook=true" src="../assets/main/lead_book.png"
+                    :class="['lead-book', showLeadBook?'object-show':'object-hide']" alt="">
             </div>
         </div>
 
         <div :class="['car-door', showDoor?'door-show':'door-hide']">
-            <img src="../assets/main/door2.png" :class="doorOpen?'door-2-in':'door-2-out'"
+            <img src="../assets/main/door2.jpg" :class="doorOpen?'door-2-in':'door-2-out'"
                 @transitionend="onDoor2TransEnd" class="door door-2" alt="">
-            <img src="../assets/main/door1.png" :class="doorOpen?'door-1-in':'door-1-out'"
+            <img src="../assets/main/door1.jpg" :class="doorOpen?'door-1-in':'door-1-out'"
                 @transitionend="onDoor1TransEnd" class="door door-1" alt="">
         </div>
 
@@ -26,11 +31,20 @@
             </dialog-box>
         </step-cover>
 
-        <step-cover :show="showBook" opacity="0.5">
+        <step-cover :show="openLeadBook" @click="handNextPage" opacity="0">
+            <img :class="['book-open', b_page==0?'book-show':'book-hide']" src="../assets/main/book_close.png" alt="">
+            <img src="../assets/main/bookOpen.gif"
+                :class="['book-open', 'book-review', b_page==1?'book-show':'book-hide']" alt="">
+            <img :class="['book-open', b_page==2?'book-show':'book-hide']" src="../assets/main/book_close.png" alt="">
+        </step-cover>
+
+
+
+        <!-- <step-cover :show="showBook" opacity="0.5">
             <img @click="toOpenBook" :class="['book-close', showBook?'book-show':'']"
                 src="../assets/main/book_close.png" alt="">
             <img :class="['book-open', openBook?'book-show':'']" src="../assets/main/book_open.png" alt="">
-        </step-cover>
+        </step-cover> -->
 
         <step-cover :show="startStory" opacity="0">
             <dialog-box :step="step" :human="dg_humans" :dialogues="dialogues" bottom="14%" @stepChange="onStepChange"
@@ -53,7 +67,6 @@
                     <img @click="getCode" src="../assets/main/sub_getcode_btn.png" class="getcode-btn" alt="">
                     <img @click="onSubmit" src="../assets/main/submit_btn.png" class="submit-btn" alt="">
                 </div>
-
             </div>
         </step-cover>
 
@@ -94,7 +107,8 @@
                 </div>
             </div>
         </step-cover>
-        <audio id="bgMusic" ref="bgMusic" :src="bgMusicUrl" loop autoplay preload="auto"></audio>
+
+        <audio id="bgMusic" ref="bgMusic" :src="bgMusicUrl" loop :autoplay="autoplay" preload="auto" hidden></audio>
     </div>
 
 </template>
@@ -118,6 +132,24 @@
     function isPhoneNumer(p) {
         return /^1[3456789]\d{9}$/.test(String(p).trim())
     }
+
+    var roles = [
+        require('../assets/main/story/role1.png'),
+        require('../assets/main/story/role2.png'),
+        require('../assets/main/story/role3.png'),
+        require('../assets/main/story/role4.png')
+    ];
+
+    var books = [
+        require('../assets/main/story/role1.png'),
+        require('../assets/main/story/role2.png'),
+        require('../assets/main/story/role3.png'),
+        require('../assets/main/story/role4.png')
+    ];
+
+    const bgMusicFile = require('../assets/audio/bg_music.mp3');
+    const captainImg = require('../assets/main/captain.png');
+    const dlog = require('../assets/main/d3.png');
 
     export default {
         name: 'car',
@@ -150,20 +182,28 @@
                 dg_ls: [],
                 showTip: false,
                 showBook: false,
+                showLeadBook: false,
+                openLeadBook: false,
                 openBook: false,
                 startStory: false,
                 storyEnded: false,
                 submitEnded: false,
                 showCode: false,
+                showObjects: false,
                 introEnded: false,
                 doorOpen: false,
                 showDoor: false,
                 totast: '',
+                books: books,
+                b_page: 0,
                 dialogues: [],
                 phoneNumber: '',
                 code: '',
                 bgMusic: null,
-                bgMusicUrl: ''
+                bgMusicUrl: '',
+                // 音频ios平台用Audio处理
+                autoplay: !!!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/),
+
             }
         },
 
@@ -189,7 +229,7 @@
 
             playBgMusic() {
                 console.log('播放音乐')
-                this.bgMusicUrl = require('../assets/audio/bg_music.wav')
+                this.bgMusicUrl = bgMusicFile
                 this.bgMusic && this.bgMusic.play()
             },
 
@@ -254,35 +294,65 @@
                 this.step++
             },
 
+            startOpenBook() {
+                this.openLeadBook = true
+            },
+
+            handNextPage() {
+                this.b_page++
+                // if (this.b_page > 2) {
+                //     this.b_page = 0
+                //     this.openLeadBook = false
+                //     this.showObjects = true
+                // }
+                setTimeout(() => {
+                    this.b_page = 0
+                    setTimeout(() => {
+                        this.openLeadBook = false
+                        this.showObjects = true
+                    }, 1800);
+
+                }, 5400);
+
+            },
+
             toggleTip() {
-                if (!this.showTip) {
-                    this.dg_ls = [require('../assets/main/d3.png')]
-                    this.dg_humans = [require('../assets/main/captain.png')]
-                }
                 this.showTip = !this.showTip
+                if (this.showTip) {
+                    this.dg_ls = [dlog]
+                    // this.dg_humans = [captainImg]
+
+                } else {
+                    this.showLeadBook = true
+                }
             },
 
             startRole1() {
+                // console.log('开始角色1')
                 this.dialogues = stories.getAll(1)
-                this.dg_humans = [require('../assets/main/story/role1.png')]
+                this.dg_humans = [roles[0]]
                 this.startStory = true
             },
 
             startRole2() {
+                // console.log('开始角色2')
                 this.dialogues = stories.getAll(2)
-                this.dg_humans = [require('../assets/main/story/role2.png')]
+                this.dg_humans = [roles[1]]
                 this.startStory = true
+
             },
 
             startRole3() {
+                // console.log('开始角色3')
                 this.dialogues = stories.getAll(3)
-                this.dg_humans = [require('../assets/main/story/role3.png')]
+                this.dg_humans = [roles[2]]
                 this.startStory = true
             },
 
             startRole4() {
+                // console.log('开始角色4')
                 this.dialogues = stories.getAll(4)
-                this.dg_humans = [require('../assets/main/story/role4.png')]
+                this.dg_humans = [roles[3]]
                 this.startStory = true
             },
 
@@ -542,7 +612,6 @@
                     width: 1.4rem;
                     height: .6rem;
                 }
-
             }
         }
 
@@ -572,11 +641,14 @@
             z-index: 2;
         }
 
+        .book-review {
+            height: 90% !important;
+        }
+
         .book-show {
             z-index: 3;
             opacity: 1 !important;
         }
-
 
         .book-hide {
             opacity: 0 !important;
@@ -612,6 +684,7 @@
         .car-book,
         .car-scroll,
         .car-jars,
+        .car-horn,
         .car-worm {
             position: absolute;
             z-index: 10;
@@ -620,10 +693,32 @@
 
         .car-horn {
             position: absolute;
-            width: .5rem;
-            height: .5rem;
-            right: 95px;
-            bottom: 130%;
+            width: .36rem;
+            height: .36rem;
+            right: 118px;
+            bottom: 112%;
+        }
+
+        .object-show,
+        .object-hide {
+            transition: opacity .8s ease-in-out;
+        }
+
+        .object-show {
+            /* opacity: 1!important; */
+            animation: object 2s ease-in-out infinite;
+        }
+
+        .object-hide {
+            opacity: 0 !important;
+        }
+
+        .lead-book {
+            position: absolute;
+            width: .54rem;
+            height: .58rem;
+            right: 35px;
+            bottom: 42%;
         }
 
         .car-book {
@@ -641,10 +736,10 @@
         }
 
         .car-worm {
-            width: .72rem;
-            height: .72rem;
-            left: .08rem;
-            bottom: 21%;
+            width: .62rem;
+            height: .52rem;
+            left: 1.1rem;
+            bottom: 56%;
         }
 
         .car-scroll {

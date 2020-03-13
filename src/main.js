@@ -1,11 +1,12 @@
 import Vue from "vue";
 import App from "./App.vue";
+import Vconsole from 'vconsole'
 import router from "./router";
 import store from "./store";
-import jq from "jquery"
+
+// new Vconsole();
 
 if (window) {
-  window.$ = jq
   router.beforeEach((to, from, next) => {
     if (to.meta.title) {
       document.title = to.meta.title
@@ -13,7 +14,9 @@ if (window) {
     next()
   })
 }
+
 Vue.config.productionTip = false;
+
 
 new Vue({
   router,

@@ -1,7 +1,8 @@
 <template>
     <div class="dialog-wrapper" @click="handleNext">
         <div v-if="!dialogues.length" class="single-dialogue">
-            <img v-if="human" :src="human"
+            <img v-if="human && human.length"
+                :src="human"
                 :style="{left: humanLeft, bottom: humanBottom, width: humanWidth, height: humanHeight }"
                 class="dialog-human" alt="">
             <img :src="list[d_step]" :style="{width, height,left, top, right, bottom }" class="dialog-item"
@@ -10,7 +11,8 @@
         </div>
 
         <div v-if="dialogues.length" class="dialogues" :style="{bottom}">
-            <img :src="human" :style="{left: humanLeft, bottom: humanBottom, width: humanWidth, height: humanHeight }"
+            <img v-if="human && human.length" :src="human"
+                :style="{left: humanLeft, bottom: humanBottom, width: humanWidth, height: humanHeight }"
                 class="dialog-human" alt="">
             <div :class="['dialog-foreground', changeStep?'step-change':'step-reset']" :style="{height: dgBgHeight }">
                 <!-- <img src="../assets/main/dialog_empty.png" class="dialog-empty-card" alt=""> -->
@@ -34,7 +36,7 @@
             human: {
                 type: [Object, String, Array],
                 default: function () {
-                    return ''
+                    return null
                 }
             },
 

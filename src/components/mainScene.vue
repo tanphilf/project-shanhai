@@ -1,12 +1,12 @@
 <template>
     <div class="main-scene-wrapper">
         <div class="main-view" :style="{transform: 'translateX('+viewX+')'}">
-            <img src="../assets/main/scene_bg.png" style="z-index: 1;" class="main-bg" alt="">
+            <img :src="bgImg" style="z-index: 1;" class="main-bg" alt="">
             <img src="../assets/main/fog1.png" :class="['fog-1', start_car?'fog1-enter':'']" alt="">
             <img src="../assets/main/fog2.png" :class="['fog-2', start_car?'fog2-enter':'']" alt="">
             <img src="../assets/main/scene_car.png" :style="{zIndex: 3, right: start_car?car_x+'%':'', marginTop: carTop}" class="main-car" alt="">
-            <img src="../assets/main/scene_floor.png" style="z-index: 4;" class="main-floor" alt="">
-            <img src="../assets/main/scene_objects.png" style="z-index: 5;" class="main-objects" alt="">
+            <img :src="floorImg" style="z-index: 4;" class="main-floor" alt="">
+            <img :src="objectsImg" style="z-index: 5;" class="main-objects" alt="">
         </div>
 
         <!-- <div @click="startTest" style="color: white;position: fixed;top: 20px;right: 50px;background-color: rgba(0,0,0,0.84);">开始测试</div> -->
@@ -59,7 +59,10 @@
                 vd: 0,
                 alpha: 0,
                 beta: 0,
-                gamma: 0
+                gamma: 0,
+                bgImg: require('../assets/main/scene_bg.jpg'),
+                floorImg: require('../assets/main/scene_floor.png'),
+                objectsImg: require('../assets/main/scene_objects.png')
             }
         },
 
